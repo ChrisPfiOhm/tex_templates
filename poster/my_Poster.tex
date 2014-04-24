@@ -1,0 +1,265 @@
+\documentclass[portrait,final,a0paper,fontscale=0.287]{my_Poster}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Begin of Document
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\setlength{\columnsep}{1.5em}
+\setlength{\columnseprule}{0mm}
+
+\newcommand{\compresslist}{%
+\setlength{\itemsep}{1pt}%
+\setlength{\parskip}{0pt}%
+\setlength{\parsep}{0pt}%
+}
+%\definecolor{lightblue}{cmyk}{0.83,0.24,0,0.12}
+\definecolor{lightblue}{rgb}{0.145,0.6666,1}
+
+
+
+\begin{poster}%
+  % Poster Options
+  {
+  grid=false,
+  colspacing=1em,
+  bgColorOne=lightgray,
+  bgColorTwo=white,
+  borderColor=lightblue,
+  headerColorOne=black,
+  headerColorTwo=lightblue,
+  headerFontColor=white,
+  boxColorOne=white,
+  boxColorTwo=lightblue,
+  textborder=rectangle,
+  eyecatcher=true,
+  headerborder=closed,
+  headerheight=0.1\textheight,
+%  textfont=\sc, An example of changing the text font
+  headershape=roundedright,
+  headershade=shadelr,
+  headerfont=\Large\bf\textsc, %Sans Serif
+  textfont={\setlength{\parindent}{1.5em}},
+  boxshade=plain,
+ % background=shade-tb,
+  background=none,
+  linewidth=1pt
+  }
+  % Eye Catcher
+  %{\includegraphics[height=5em]{auton.png}} 
+  % Title
+  {\bf\textsc{Obstacle Avoidance in
+tele-operated Rescue Robotics}\vspace{0.5em}}
+  % Authors
+  {\textsc{Christian Pfitzner}\vspace{0.3em} \\
+  			Mobile Robotics Laboratory, Ohm University Nuremberg}
+  {% The makebox allows the title to flow into the logo, this is a hack because of the L shaped logo.
+%    \includegraphics[height=6.0em]{Ohm}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Rescue Robotic}{name=RescueRobotic,column=0,row=0}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent\begin{tabular}{c@{\hspace{0.3em}}c@{\hspace{1.5em}}r@{}}
+%\includegraphics[width=0.45\linewidth]{png_jpg/georg_5_3.jpg} & %\includegraphics[width=0.45\linewidth]{png_jpg/georg_gelbearena_5_3.jpg} \\
+\tiny{Rescue Robot Georg the First.} & \tiny{Operating at RoboCup Rescue.}
+\end{tabular}\vspace{0.5em} \\
+  \indent Rescue robots should help to find people in disaster scenarios like earthquakes or destructive tidal flood. \\
+  \indent For training, developers meet at the \textbf{RoboCup Rescue} compete against each other and share ideas. The Mobile Laboratory owns one rescue robot called \textbf{Georg the First}. 
+  Prominent example for a successfully operating robot in a rescue scenario was the robot Quince at Fukushima, which made it possible to measure radiation in a reactor building. 
+  }	
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Motivation}{name=motivation,column=1,row=0,bottomaligned=RescueRobotic}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\noindent\begin{tabular}{c@{\hspace{0.3em}}c@{\hspace{1.5em}}r@{}}
+%\includegraphics[width=0.48\linewidth]{png_jpg/roboPerspektive.png}	 &
+%\includegraphics[width=0.48\linewidth]{png_jpg/vogelPerspektive.png}		\\
+\tiny{Step Height.} & \tiny{Slope.} \\ 
+\end{tabular}
+\indent State of technology is to drive the robot \textbf{manually by an operator} with a control unit to approach danger areas like heavy damaged buildings after an earthquake. There is a need for a driving assistance for mobile robots to prevent collisions with obstacles or damage the robot. 
+\vspace{0.5em}\\
+Challenges in tele-operated driving are:
+   \begin{compactitem}
+      \item limited angle of view
+      \item distance approximation in 2D images
+   \end{compactitem}
+\vspace{0.5em}
+ }
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\headerbox{Algorithm}{name=algorithm,column=0,span=3,below=RescueRobotic}{
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      \begin{multicols}{3}
+	The point cloud is projected into a two-dimensional grid, with the robot in its center. For a fast-moving robot, the length of the square sized grid should be adapted to see obstacles early enough.  \\ 
+\begin{minipage}[b]{0.33\textwidth}
+	\noindent\begin{tabular}{c@{\hspace{0.3em}}c@{\hspace{1.5em}}r@{}}
+%\resizebox{0.45\textwidth}{!}{\input{ascendingObstacle.pdf_tex}}	 &
+%\resizebox{0.45\textwidth}{!}{\input{ascendingSlope.pdf_tex}} 		\\
+\tiny{Step Height.} & \tiny{Slope.} \\ 
+\end{tabular}\vspace{0.0em}
+	 \end{minipage}
+	    
+For each cell in the grid a danger value is assigned with the help of \textbf{step height} $h$ and \textbf{slope} $s$ and also the corresponding critical values ($s_{crit}, h_{crit})$[1],  which have to be estimated empirically and depend on the mechanical abilities of a robot.
+\vspace{0.5em}\\
+The danger value $d$ is calculated with following parameters:\\
+	\begin{tabular}{ll}
+		$s$: 		& slope in cell\\
+		$h$: 		& max. step height to neighbored cells\\
+		$s_{crit}$: & critical slope \\
+		$h_{crit}$: & critical step height\\
+	 	$\alpha$:   & weighting parameter between slope\\
+	 	&  and step height detection\\
+	\end{tabular}
+\begin{equation*}
+d = {\alpha}_s \dfrac{s}{s_{crit}} + {\alpha}_h \dfrac{h}{h_{crit}} %+ {\alpha}_2 \dfrac{r}{r_{crit}}
+\end{equation*}
+The danger values $d$ has the following intend to the robot: 
+\vspace{0.5em}
+\hrule
+	\begin{tabular}{ll}
+		$d=0$		& easy to traverse\\
+		$0<d<1$		& traversable\\
+		$d\ge1$		& not traversable\\
+	\end{tabular} \\
+	\hrule
+	\vspace{0.5em}
+The whole obstacle grid $\mat{O}_{n \times n}$ with the danger value $d$ around the robot is described with followed equation:
+\begin{equation*}
+	\mat{O}_{n \times n} 
+	  = \dfrac{{\alpha}_s}{s_{crit}}  \mat{S}_{n \times n} +  
+		\dfrac{{\alpha}_h}{h_{crit}}  \mat{H}_{n \times n} 
+\end{equation*}
+ 
+%\begin{minipage}[b]{0.1\textwidth}
+%	\resizebox{\textwidth}{!}{\input{tikz/flowchart}}
+%\end{minipage} 
+%  
+	Speed set by the operator is limited with a position controller.  While approaching to an obstacle the robot will slow down. 
+	
+	\begin{minipage}[b]{0.86\linewidth}
+%		\resizebox{\textwidth}{!}{\input{pos_limitExt.pdf_tex}} \\
+		\tiny{Block Diagram for Position Controller [2,3].}
+	\end{minipage}
+	\end{multicols}
+
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\headerbox{Experiments}{name=experiments,column=0,below=algorithm,span=3}{
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{multicols}{3}
+  \noindent Set up for experiments: 
+	\begin{compactitem}
+		\item sensor placed on 30 cm high plateau
+		\item small obstacle on plateau
+		\item wall and other obstacles on the ground
+	\end{compactitem}
+	\begin{minipage}[b]{0.48\linewidth}
+	%	\includegraphics[width=\textwidth]{scene.png} \\
+		\tiny{Scene from Sensor View.}
+	\end{minipage} \hfill
+	\begin{minipage}[b]{0.48\linewidth}
+	%	\includegraphics[width=\textwidth]{ps.png} \\
+		\tiny{Side View.}
+	\end{minipage} \hfill
+	
+	The obstacle grid was initialized with following parameters which are suitable for Georg. These parameters have been estimated in earlier experiments: 
+	\begin{compactitem}
+		\item weighting: $\alpha_s = \alpha_h = 0.5$
+		\item $h_{crit} = 0.15 m$, $s_{crit} = 25 ^\circ$
+	\end{compactitem}
+	\vspace{1.0em}
+
+\noindent	\textbf{Result}\\
+	\indent Obstacles are marked red, while free space is signed with white. The obstacle grid detects wall and obstacles in the back by step height. The falling edge of the plateau is recognized with the help of the slope. With a resolution of 4 cm and a size of $2\,\times\,2$ m the algorithm runs with 12 Hz. \\
+	\begin{minipage}[b]{0.3\textwidth}
+	%	\includegraphics[width=\textwidth]{both.png}	\\
+		\tiny{Obstacle Grid. }
+	\end{minipage}
+	\end{multicols}
+   \vspace{0.0em}
+}
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{A Future Direction}{name=questions,column=1,span=2,column=0,below=experiments}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \begin{multicols}{2}
+	The assistance system should be tested in collaboration with rescue forces. Therefore the robot Georg the First will be presented at the open house presentation of the fire brigade Dettelbach, Germany. In a training mission the fire fighter will train together with the robot. \indent Long-term orientation is to generate a system which can be driven without special knowledge in robotics. 
+	\end{multicols}
+}  
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{References}{name=references,span=2,column=0,above=bottom}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+  \begin{multicols}{2}
+  \tiny
+\begin{tabular}{p{0.5cm}p{5cm}}
+[1] & \textsc{Chilian, A.; Hirschmüller, H}: Stereo camera based navigation of mobile robots on rough terrain. In \emph{Proceedings IEEE/RSJ international conference on Intelligent robots and systems,2009 }\\
+
+[2] &  \textsc{Sony}: Playstation Zubehör. Website - access: February 2013 \\
+\end{tabular} 
+
+\begin{tabular}{p{0.5cm}p{5cm}}
+[3] &  \textsc{Axus}: Xtion Pro Depth Sensor. Website - access: February 2013 \\
+
+[4] &  \textsc{May} S.: Obviously: Open Robotic Vision and Utilities Library. Website - access: February 2013 \\
+\end{tabular} 
+	\end{multicols}
+  }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Source Code}{name=source,column=2,below=experiments}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{minipage}{0.7\textwidth}
+The source code is free to use and available in a GitHub repository at \\
+  \url{github.com/stefanmay/obviously.git} [4]
+\end{minipage}	
+\hfill
+\begin{minipage}{0.2\textwidth}
+	\begin{flushright}
+%	\includegraphics[width=\textwidth]{png_jpg/github.png}
+	\end{flushright}
+\end{minipage}	  
+
+   \vspace{0.3em}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Acknowledgment}{name=references,column=2,above=bottom,aligned=references}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{minipage}[b]{0.7\linewidth}
+	\tiny
+	\indent This project is supported by the \textbf{Staedtler Foundation} and also in collaboration with the \textbf{Fire Brigade Dettelbach}, Germany. 
+	\end{minipage}\hfill
+	\begin{minipage}[t]{0.2\linewidth}
+	\begin{center}
+			%\includegraphics[width=0.3\linewidth]{png_jpg/staedtler_head.jpg}
+	\end{center}
+	\end{minipage}
+}
+  
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \headerbox{Sensors \& Pre-processing}{name=sensors model,column=2,row=0,bottomaligned=RescueRobotic}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent\begin{tabular}{c@{\hspace{0.3em}}c@{\hspace{1.5em}}r@{}}
+%\includegraphics[width=0.45\linewidth]{png_jpg/xtion.png}	 &
+%\includegraphics[width=0.45\textwidth]{png_jpg/pointCloud.png} 		\\
+\tiny{Asus Xtion [3]} & \tiny{Point Cloud.}\\ 
+\end{tabular}\vspace{0.5em}
+  \indent The here presented obstacle avoidance is compatible with all kind of sensors which generate point clouds. The algorithm was tested in experiments with the \textbf{structured light sensor} Asus Xtion, but should also work with \textbf{time-of-flight cameras} or \textbf{3D laser scanners}. \\
+  \indent 	For obstacle detection and processing, the grabbed point cloud is \textbf{transformed} to the robot coordinate system, and also \textbf{filtered in distance and height}.
+}
+
+\end{poster}
+
+\end{document}
